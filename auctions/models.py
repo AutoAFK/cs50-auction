@@ -18,13 +18,22 @@ class Auction(models.Model):
     item = models.ForeignKey(Item,on_delete=models.CASCADE,related_name="item_auctions")
     price = models.DecimalField(max_digits=6,decimal_places=2)
 
+    def __str__(self):
+        return f"{self.item}: {self.price}$"
+
 class Bid(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE,related_name="user_bids")
     bid = models.DecimalField(max_digits=6,decimal_places=2) 
     auction = models.ForeignKey(Auction,on_delete=models.CASCADE,related_name="auction_bids")
+
+    def __str__(self):
+        return f"{self.user}: {self.bid}$ on {self.auction.item.name}"
 
 class Comment(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE,related_name="user_comments")
     auction = models.ForeignKey(Auction,on_delete=models.CASCADE,related_name="auction_comments")
     comment = models.CharField(max_length=120)
     datetime = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user} on {self.auction.item.name}: {self.comment}"
