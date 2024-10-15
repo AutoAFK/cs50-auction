@@ -4,11 +4,24 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User
+from .models import User,Auction,Bid,Comment,Item
 
 
 def index(request):
-    return render(request, "auctions/index.html")
+    return render(request, "auctions/index.html", {
+        "auctions": Auction.objects.all() 
+    })
+
+def auction_item(request,auction_id):
+    item = Auction.objects.get(id=auction_id)
+    current_bid = item.price
+    highest_bid = Bid.objects.order_by('-bid').first().bid
+    if(highest_bid > current_bid):
+        item.price = highest_bid
+    return render(request, "auctions/auction.html",{
+        "auction": Auction.objects.get(id=auction_id),
+        "current_bid": current_bid
+    })
 
 
 def login_view(request):
