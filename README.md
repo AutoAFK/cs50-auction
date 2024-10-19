@@ -1,4 +1,4 @@
-TODO:
+# TODOS
 
 [] - setup models for database
     [] - Maybe add a boolean option for closed auction.
@@ -10,7 +10,7 @@ TODO:
         [x] - current price/bid
         [] - How long there is for the auction to close.
 [] - setup auction page
-    [] - Display auction item name, price, list of bids
+    [x] - Display auction item name, price, list of bids
     [] - make an option to place a bid.
     [] - add comments and display them.
 [] - user page where they can see:

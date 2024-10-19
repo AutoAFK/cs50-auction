@@ -4,24 +4,52 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User,Auction,Bid,Comment,Item
+from .models import User, Auction, Bid, Comment, Item
+from .auction import PlaceBidForm
 
 
 def index(request):
-    return render(request, "auctions/index.html", {
-        "auctions": Auction.objects.all() 
-    })
+    return render(request, "auctions/index.html", {"auctions": Auction.objects.all()})
 
-def auction_item(request,auction_id):
+
+def auction_item(request, auction_id):
+    # Check for the heighest bid and replace current price with it
     item = Auction.objects.get(id=auction_id)
     current_bid = item.price
-    highest_bid = Bid.objects.order_by('-bid').first().bid
-    if(highest_bid > current_bid):
+    highest_bid = Bid.objects.order_by("-bid").first().bid
+    if highest_bid > current_bid:
         item.price = highest_bid
-    return render(request, "auctions/auction.html",{
-        "auction": Auction.objects.get(id=auction_id),
-        "current_bid": current_bid
-    })
+        item.save()
+
+    # create a place bid form and set minimum value to the heighest bid.
+    form = PlaceBidForm()
+    form.fields["amount"].widget.attrs["min"] = item.price
+    form.fields["amount"].widget.attrs["value"] = item.price
+
+    return render(
+        request,
+        "auctions/auction.html",
+        {
+            "auction": Auction.objects.get(id=auction_id),
+            "current_bid": current_bid,
+            "place_bid_form": form,
+        },
+    )
+
+
+def place_bid(request):
+    if request.method == "POST":
+        bid_amount = request.POST["amount"]
+        auction_id = request.POST["auction_id"]
+        current_price = request.POST["auction_price"]
+        user = request.user
+        if bid_amount > current_price:
+            user_bid = Bid(
+                user=user, bid=bid_amount, auction=Auction.objects.get(id=auction_id)
+            )
+            user_bid.save()
+        return HttpResponseRedirect(reverse("auction_item", args=[auction_id]))
+    return
 
 
 def login_view(request):
@@ -37,9 +65,11 @@ def login_view(request):
             login(request, user)
             return HttpResponseRedirect(reverse("index"))
         else:
-            return render(request, "auctions/login.html", {
-                "message": "Invalid username and/or password."
-            })
+            return render(
+                request,
+                "auctions/login.html",
+                {"message": "Invalid username and/or password."},
+            )
     else:
         return render(request, "auctions/login.html")
 
@@ -58,18 +88,20 @@ def register(request):
         password = request.POST["password"]
         confirmation = request.POST["confirmation"]
         if password != confirmation:
-            return render(request, "auctions/register.html", {
-                "message": "Passwords must match."
-            })
+            return render(
+                request, "auctions/register.html", {"message": "Passwords must match."}
+            )
 
         # Attempt to create new user
         try:
             user = User.objects.create_user(username, email, password)
             user.save()
         except IntegrityError:
-            return render(request, "auctions/register.html", {
-                "message": "Username already taken."
-            })
+            return render(
+                request,
+                "auctions/register.html",
+                {"message": "Username already taken."},
+            )
         login(request, user)
         return HttpResponseRedirect(reverse("index"))
     else:

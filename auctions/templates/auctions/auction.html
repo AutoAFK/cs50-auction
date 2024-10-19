@@ -4,6 +4,15 @@
   <h1>{{ auction.item.name }}</h1>
   <h3>Listed by: {{ auction.user }}</h3>
   <h5>Current Bid: {{ current_bid }}$</h5>
+  <h3>Bid List:</h3>
+  <p>Auction id: {{ auction.id }}</p>
+  <form action="{% url 'place_bid' %}" method="post">
+    {% csrf_token %}
+    <input type="hidden" name="auction_price" value=" {{ auction.price }}" />
+    <input type="hidden" name="auction_id" value="{{ auction.id }}" />
+    {{ place_bid_form }}
+    <input type="submit" value="Place Bid" class="btn btn-primary" />
+  </form>
   <ol>
     {% for bid in auction.auction_bids.all %}
       <li>{{ bid }}</li>
