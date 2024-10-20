@@ -19,3 +19,19 @@
     {% endfor %}
   </ol>
 {% endblock %}
+
+{% block navlinks %}
+  <li class="nav-item">
+    {% if is_watchlisted %}
+      <form class="nav-item" action="{% url 'add_to_watchlist' auction.id %}" method="post">
+        {% csrf_token %}
+        <input class="nav-link" type="submit" value="Remove Watchlist" />
+      </form>
+    {% else %}
+      <form class="nav-item" action="{% url 'add_to_watchlist' auction.id %}" method="post">
+        {% csrf_token %}
+        <input class="nav-link" type="submit" value="Add Watchlist" />
+      </form>
+    {% endif %}
+  </li>
+{% endblock %}

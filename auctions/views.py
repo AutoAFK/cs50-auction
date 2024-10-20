@@ -4,7 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User, Auction, Bid, Comment, Item
+from .models import User, Auction, Bid, Comment, Item, WatchList
 from .auction import PlaceBidForm
 
 
@@ -21,6 +21,8 @@ def auction_item(request, auction_id):
         item.price = highest_bid
         item.save()
 
+    user = request.user
+    watchlist_item = user.user_watchlist.filter(auction=item).exists()
     # create a place bid form and set minimum value to the heighest bid.
     form = PlaceBidForm()
     form.fields["amount"].widget.attrs["min"] = item.price
@@ -33,6 +35,7 @@ def auction_item(request, auction_id):
             "auction": Auction.objects.get(id=auction_id),
             "current_bid": current_bid,
             "place_bid_form": form,
+            "is_watchlisted": watchlist_item,
         },
     )
 
@@ -50,6 +53,17 @@ def place_bid(request):
             user_bid.save()
         return HttpResponseRedirect(reverse("auction_item", args=[auction_id]))
     return
+
+
+def add_to_watchlist(request, auction_id):
+    if request.method == "POST":
+        user = request.user
+        if not user.user_watchlist.filter(auction=auction_id).exists():
+            watchlist = WatchList(user=user, auction=Auction.objects.get(id=auction_id))
+            watchlist.save()
+        else:
+            user.user_watchlist.filter(auction=auction_id).delete()
+    return HttpResponseRedirect(reverse("auction_item", args=[auction_id]))
 
 
 def login_view(request):
