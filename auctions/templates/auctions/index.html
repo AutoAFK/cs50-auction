@@ -5,7 +5,9 @@
 
   <ol>
     {% for auction in auctions %}
-      <li>{{ auction }}</li>
+      <li>
+        <a href="{% url 'auction_item' auction.id %}">{{ auction }}</a>
+      </li>
     {% endfor %}
   </ol>
 {% endblock %}

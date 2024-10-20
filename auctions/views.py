@@ -66,6 +66,19 @@ def add_to_watchlist(request, auction_id):
     return HttpResponseRedirect(reverse("auction_item", args=[auction_id]))
 
 
+def user_page(request):
+    user = request.user
+    return render(
+        request,
+        "auctions/user.html",
+        {
+            "user": user,
+            "auctions": user.user_auctions.all(),
+            "watchlist": user.user_watchlist.all(),
+        },
+    )
+
+
 def login_view(request):
     if request.method == "POST":
 

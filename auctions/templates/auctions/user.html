@@ -1,0 +1,29 @@
+{% extends 'auctions/layout.html' %}
+
+{% block body %}
+  <h1>{{ user }}</h1>
+  <h2>Listed Items:</h2>
+  {% if not auctions %}
+    <p>No listed items.</p>
+  {% else %}
+    <ol>
+      {% for auction in auctions %}
+        <li>
+          <a href="{% url 'auction_item' auction.id %}">{{ auction.item.name }}</a>
+        </li>
+      {% endfor %}
+    </ol>
+  {% endif %}
+  <h2>Watch List Auction:</h2>
+  {% if not watchlist %}
+    <p>No listed items.</p>
+  {% else %}
+    <ol>
+      {% for item in watchlist %}
+        <li>
+          <a href="{% url 'auction_item' item.auction.id %}">{{ item.auction.item.name }}</a>
+        </li>
+      {% endfor %}
+    </ol>
+  {% endif %}
+{% endblock %}

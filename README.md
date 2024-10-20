@@ -9,7 +9,6 @@
   - [] - Auction Container:
   - [x] - Auction Item
   - [x] - current price/bid
-  - [] - How long there is for the auction to close.
 
 - [] - setup auction page
   - [x] - Display auction item name, price, list of bids

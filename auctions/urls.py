@@ -14,4 +14,5 @@ urlpatterns = [
         views.add_to_watchlist,
         name="add_to_watchlist",
     ),
+    path("user", views.user_page, name="user_page"),
 ]
