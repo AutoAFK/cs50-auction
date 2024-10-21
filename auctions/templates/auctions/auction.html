@@ -21,16 +21,13 @@
 
 {% block navlinks %}
   <li class="nav-item">
-    {% if is_watchlisted %}
-      <form class="nav-item" action="{% url 'add_to_watchlist' auction.id %}" method="post">
-        {% csrf_token %}
-        <input class="nav-link" type="submit" value="Remove Watchlist" />
-      </form>
-    {% else %}
-      <form class="nav-item" action="{% url 'add_to_watchlist' auction.id %}" method="post">
-        {% csrf_token %}
-        <input class="nav-link" type="submit" value="Add Watchlist" />
-      </form>
-    {% endif %}
+    <form class="nav-item" id="watchlist_form" action="{% url 'add_to_watchlist' auction.id %}" method="post">
+      {% csrf_token %}
+      {% if is_watchlisted %}
+        <a class="nav-link" style="color: #007bff; cursor: pointer;" onclick="document.getElementById('watchlist_form').submit();">Remove Watchlist</a>
+      {% else %}
+        <a class="nav-link" style="color: #007bff; cursor: pointer;" onclick="document.getElementById('watchlist_form').submit();">Add Watchlist</a>
+      {% endif %}
+    </form>
   </li>
 {% endblock %}

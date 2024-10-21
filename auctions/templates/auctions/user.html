@@ -14,6 +14,7 @@
       {% endfor %}
     </ol>
   {% endif %}
+  <a href="{% url 'auction_create' %}">Create Auction</a>
   <h2>Watch List Auction:</h2>
   {% if not watchlist %}
     <p>No listed items.</p>

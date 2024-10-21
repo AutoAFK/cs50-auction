@@ -1,0 +1,14 @@
+{% extends 'auctions/layout.html' %}
+
+{% block body %}
+  <form action="{% url 'auction_create' %}" method="post">
+    {% csrf_token %}
+    {{ form }}
+    <datalist id="items-list">
+      {% for item in items_list %}
+        <option value="{{ item.name }}" />
+      {% endfor %}
+    </datalist>
+    <input type="submit" value="Start Auction" />
+  </form>
+{% endblock %}

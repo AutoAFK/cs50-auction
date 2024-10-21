@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.urls import reverse
 
 from .models import User, Auction, Bid, Comment, Item, WatchList
-from .auction import PlaceBidForm
+from .auction import PlaceBidForm, CreateAuctionForm
 
 
 def index(request):
@@ -16,7 +16,7 @@ def auction_item(request, auction_id):
     # Check for the heighest bid and replace current price with it
     item = Auction.objects.get(id=auction_id)
     current_bid = item.price
-    highest_bid = Bid.objects.order_by("-bid").first().bid
+    highest_bid = item.auction_bids.order_by("-bid").first().bid or item.price
     if highest_bid > current_bid:
         item.price = highest_bid
         item.save()
@@ -38,6 +38,39 @@ def auction_item(request, auction_id):
             "is_watchlisted": watchlist_item,
         },
     )
+
+
+def auction_create(request):
+    items_list = Item.objects.all()
+    if request.method == "POST":
+        user = request.user
+        form = CreateAuctionForm(request.POST)
+        if form.is_valid():
+            item = form.cleaned_data["item"]
+            if Item.objects.filter(name=item).exists():
+                item = Item.objects.get(name=item)
+            price = form.cleaned_data["price"]
+            auction = Auction(user=user, item=item, price=price)
+            auction.save()
+            return HttpResponseRedirect(reverse("auction_item", args=[auction.id]))
+        return render(
+            request,
+            "auctions/create.html",
+            {
+                "form": form,
+                "items_list": items_list,
+            },
+        )
+    else:
+        form = CreateAuctionForm()
+        return render(
+            request,
+            "auctions/create.html",
+            {
+                "form": form,
+                "items_list": items_list,
+            },
+        )
 
 
 def place_bid(request):
