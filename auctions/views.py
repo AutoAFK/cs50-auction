@@ -3,6 +3,7 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from decimal import Decimal
 
 from .models import User, Auction, Bid, Comment, Item, WatchList
 from .auction import PlaceBidForm, CreateAuctionForm, CreateItemForm
@@ -16,7 +17,11 @@ def auction_item(request, auction_id):
     # Check for the heighest bid and replace current price with it
     item = Auction.objects.get(id=auction_id)
     current_bid = item.price
-    highest_bid = item.auction_bids.order_by("-bid").first().bid or item.price
+    highest_bid = item.auction_bids.order_by("-bid").first()
+    if highest_bid:
+        highest_bid = highest_bid.bid
+    else:
+        highest_bid = current_bid
     if highest_bid > current_bid:
         item.price = highest_bid
         item.save()
@@ -28,6 +33,8 @@ def auction_item(request, auction_id):
     form.fields["amount"].widget.attrs["min"] = item.price
     form.fields["amount"].widget.attrs["value"] = item.price
 
+    top_bids = item.auction_bids.order_by("-bid")[:5]
+
     return render(
         request,
         "auctions/auction/auction.html",
@@ -36,6 +43,7 @@ def auction_item(request, auction_id):
             "current_bid": current_bid,
             "place_bid_form": form,
             "is_watchlisted": watchlist_item,
+            "top_bids": top_bids,
         },
     )
 
@@ -105,9 +113,9 @@ def item_create(request):
 
 def place_bid(request):
     if request.method == "POST":
-        bid_amount = request.POST["amount"]
+        bid_amount = Decimal(request.POST["amount"])
         auction_id = request.POST["auction_id"]
-        current_price = request.POST["auction_price"]
+        current_price = Decimal(request.POST["auction_price"])
         user = request.user
         if bid_amount > current_price:
             user_bid = Bid(
@@ -115,7 +123,6 @@ def place_bid(request):
             )
             user_bid.save()
         return HttpResponseRedirect(reverse("auction_item", args=[auction_id]))
-    return
 
 
 def add_to_watchlist(request, auction_id):

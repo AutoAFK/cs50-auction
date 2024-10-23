@@ -22,7 +22,7 @@ class Auction(models.Model):
     item = models.ForeignKey(
         Item, on_delete=models.CASCADE, related_name="item_auctions"
     )
-    price = models.DecimalField(max_digits=6, decimal_places=2)
+    price = models.DecimalField(max_digits=20, decimal_places=2)
 
     def __str__(self):
         return f"{self.item}: {self.price}$"
@@ -37,7 +37,7 @@ class WatchList(models.Model):
 
 class Bid(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_bids")
-    bid = models.DecimalField(max_digits=6, decimal_places=2)
+    bid = models.DecimalField(max_digits=20, decimal_places=2)
     auction = models.ForeignKey(
         Auction, on_delete=models.CASCADE, related_name="auction_bids"
     )

@@ -15,7 +15,7 @@
     </form>
   </div>
   <ol class="list-group">
-    {% for bid in auction.auction_bids.all %}
+    {% for bid in top_bids %}
       <li class="list-group-item">{{ bid }}</li>
     {% endfor %}
   </ol>
