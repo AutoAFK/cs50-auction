@@ -1,9 +1,8 @@
 # TODOS
 
-- [] - setup models for database
-  - ~~[] - Maybe add a boolean option for closed auction.~~
+- [x] - setup models for database
   - ~~[] - Add some type of countdown for each auction until its over.~~
-  - [] - Add closing option for an auction
+  - [x] - Add closing option for an auction
   - ~~[] - Add maximum price aka AW (Auto Win)~~ its an auction, highest bid wins
 
 - [x] - setup index page for listing all the auctions
