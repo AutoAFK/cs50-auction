@@ -27,4 +27,16 @@
       {% endfor %}
     </ol>
   {% endif %}
+  <h2>Bid List:</h2>
+  {% if user.user_bids.exists %}
+    <ol>
+      {% for bid in user.user_bids.all %}
+        <li>
+          <a href="{% url 'auction_item' bid.auction.id %}">{{ bid }}</a>
+        </li>
+      {% endfor %}
+    </ol>
+  {% else %}
+    <p>No bids.</p>
+  {% endif %}
 {% endblock %}

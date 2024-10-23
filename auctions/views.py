@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from decimal import Decimal
 
-from .models import User, Auction, Bid, Comment, Item, WatchList
+from .models import User, Auction, Bid, Item, WatchList
 from .auction import PlaceBidForm, CreateAuctionForm, CreateItemForm
 
 
@@ -39,11 +39,12 @@ def auction_item(request, auction_id):
         request,
         "auctions/auction/auction.html",
         {
-            "auction": Auction.objects.get(id=auction_id),
+            "auction": item,
             "current_bid": current_bid,
             "place_bid_form": form,
             "is_watchlisted": watchlist_item,
             "top_bids": top_bids,
+            "is_same_user": item.user == request.user,
         },
     )
 
@@ -155,7 +156,7 @@ def login_view(request):
         # Attempt to sign user in
         username = request.POST["username"]
         password = request.POST["password"]
-        user = authenticate(request, username=username, password=password)
+        user = authenticate(request=request, username=username, password=password)
 
         # Check if authentication successful
         if user is not None:
@@ -191,7 +192,9 @@ def register(request):
 
         # Attempt to create new user
         try:
-            user = User.objects.create_user(username, email, password)
+            user = User.objects.create_user(
+                username=username, email=email, password=password
+            )
             user.save()
         except IntegrityError:
             return render(

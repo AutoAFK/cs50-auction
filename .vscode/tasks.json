@@ -6,19 +6,51 @@
         {
             "label": "runserver",
             "type": "shell",
-            "command": "python manage.py runserver"
+            "command": "python manage.py runserver",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "group": "Server"
+            }
         },
         {
             "label": "shell",
             "type": "shell",
-            "command": "python manage.py shell"
+            "command": "python manage.py shell",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "group": "Server"
+            }
+        },
+        {
+            "label": "manage",
+            "type": "shell",
+            "command": "${workbench.action.terminal.toggleTerminal} ${command:workbench.action.terminal.splitActiveTab}",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "group": "Server",
+                "showReuseMessage": false
+            },
+            "dependsOn": [
+                "shell"
+            ]
         },
         {
             "label": "Serve and shell",
             "dependsOn": [
                 "runserver",
-                "shell"
+                "shell",
+                "manage"
             ],
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
         }
     ]
 }

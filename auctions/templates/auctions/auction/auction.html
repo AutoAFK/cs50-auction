@@ -6,17 +6,19 @@
   <h5>Current Bid: {{ current_bid }}$</h5>
   <div class="d-flex flex-row align-items-center">
     <h3 class="p-2">Bid List:</h3>
-    <form class="d-flex flex-row align-items-center p-2" action="{% url 'place_bid' %}" method="post">
-      {% csrf_token %}
-      <input type="hidden" name="auction_price" value=" {{ auction.price }}" />
-      <input type="hidden" name="auction_id" value="{{ auction.id }}" />
-      {{ place_bid_form }}
-      <input type="submit" value="Place Bid" class="btn btn-primary m-2" />
-    </form>
+    {% if not is_same_user %}
+      <form class="d-flex flex-row align-items-center p-2" action="{% url 'place_bid' %}" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="auction_price" value=" {{ auction.price }}" />
+        <input type="hidden" name="auction_id" value="{{ auction.id }}" />
+        {{ place_bid_form }}
+        <input type="submit" value="Place Bid" class="btn btn-primary m-2" />
+      </form>
+    {% endif %}
   </div>
   <ol class="list-group">
     {% for bid in top_bids %}
-      <li class="list-group-item">{{ bid }}</li>
+      <li class="list-group-item">{{ bid.user }} {{ bid }}</li>
     {% endfor %}
   </ol>
 {% endblock %}
