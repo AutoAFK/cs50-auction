@@ -1,0 +1,12 @@
+{% extends 'auctions/layout.html' %}
+
+{% block body %}
+  <form action="{% url 'item_create' %}" method="post">
+    {% csrf_token %}
+    {% if error %}
+      <div class="p-2 mb-2 bg-warning text-dark">{{ error }}</div>
+    {% endif %}
+    {{ new_item_form }}
+    <input type="submit" value="Add Item" class="btn btn-primary" />
+  </form>
+{% endblock %}

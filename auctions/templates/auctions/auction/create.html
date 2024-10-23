@@ -3,12 +3,15 @@
 {% block body %}
   <form action="{% url 'auction_create' %}" method="post">
     {% csrf_token %}
-    {{ form }}
+    {{ new_auction_form }}
     <datalist id="items-list">
       {% for item in items_list %}
         <option value="{{ item.name }}" />
       {% endfor %}
     </datalist>
-    <input type="submit" value="Start Auction" />
+    <input type="submit" value="Start Auction" class="btn btn-primary" />
   </form>
+
+  <h2>Can't find your item?</h2>
+  <a href="{% url 'item_create' %}">Create one here</a>
 {% endblock %}

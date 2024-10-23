@@ -4,17 +4,19 @@
   <h1>{{ auction.item.name }}</h1>
   <h3>Listed by: {{ auction.user }}</h3>
   <h5>Current Bid: {{ current_bid }}$</h5>
-  <h3>Bid List:</h3>
-  <form action="{% url 'place_bid' %}" method="post">
-    {% csrf_token %}
-    <input type="hidden" name="auction_price" value=" {{ auction.price }}" />
-    <input type="hidden" name="auction_id" value="{{ auction.id }}" />
-    {{ place_bid_form }}
-    <input type="submit" value="Place Bid" class="btn btn-primary" />
-  </form>
-  <ol>
+  <div class="d-flex flex-row align-items-center">
+    <h3 class="p-2">Bid List:</h3>
+    <form class="d-flex flex-row align-items-center p-2" action="{% url 'place_bid' %}" method="post">
+      {% csrf_token %}
+      <input type="hidden" name="auction_price" value=" {{ auction.price }}" />
+      <input type="hidden" name="auction_id" value="{{ auction.id }}" />
+      {{ place_bid_form }}
+      <input type="submit" value="Place Bid" class="btn btn-primary m-2" />
+    </form>
+  </div>
+  <ol class="list-group">
     {% for bid in auction.auction_bids.all %}
-      <li>{{ bid }}</li>
+      <li class="list-group-item">{{ bid }}</li>
     {% endfor %}
   </ol>
 {% endblock %}

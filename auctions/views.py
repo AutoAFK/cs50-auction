@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.urls import reverse
 
 from .models import User, Auction, Bid, Comment, Item, WatchList
-from .auction import PlaceBidForm, CreateAuctionForm
+from .auction import PlaceBidForm, CreateAuctionForm, CreateItemForm
 
 
 def index(request):
@@ -30,7 +30,7 @@ def auction_item(request, auction_id):
 
     return render(
         request,
-        "auctions/auction.html",
+        "auctions/auction/auction.html",
         {
             "auction": Auction.objects.get(id=auction_id),
             "current_bid": current_bid,
@@ -44,32 +44,62 @@ def auction_create(request):
     items_list = Item.objects.all()
     if request.method == "POST":
         user = request.user
-        form = CreateAuctionForm(request.POST)
-        if form.is_valid():
-            item = form.cleaned_data["item"]
+        new_auction_form = CreateAuctionForm(request.POST)
+        if new_auction_form.is_valid():
+            item = new_auction_form.cleaned_data["item"]
             if Item.objects.filter(name=item).exists():
                 item = Item.objects.get(name=item)
-            price = form.cleaned_data["price"]
+            price = new_auction_form.cleaned_data["price"]
             auction = Auction(user=user, item=item, price=price)
             auction.save()
             return HttpResponseRedirect(reverse("auction_item", args=[auction.id]))
         return render(
             request,
-            "auctions/create.html",
+            "auctions/auction/create.html",
             {
-                "form": form,
+                "new_auction_form": new_auction_form,
                 "items_list": items_list,
             },
         )
     else:
-        form = CreateAuctionForm()
+        new_auction_form = CreateAuctionForm()
         return render(
             request,
-            "auctions/create.html",
+            "auctions/auction/create.html",
             {
-                "form": form,
+                "new_auction_form": new_auction_form,
                 "items_list": items_list,
             },
+        )
+
+
+def item_create(request):
+    if request.method == "POST":
+        new_item_form = CreateItemForm(request.POST)
+        if new_item_form.is_valid():
+            item_name = new_item_form.cleaned_data["name"]
+            if Item.objects.filter(name=item_name).exists():
+                return render(
+                    request,
+                    "auctions/item/create.html",
+                    {"new_item_form": new_item_form, "error": "Item already exists."},
+                )
+            description = new_item_form.cleaned_data["description"]
+            item = Item(name=item_name, description=description)
+            item.save()
+            return HttpResponseRedirect(reverse("auction_create"))
+        else:
+            return render(
+                request,
+                "auctions/item/create.html",
+                {"new_item_form": new_item_form},
+            )
+    else:
+        new_item_form = CreateItemForm()
+        return render(
+            request,
+            "auctions/item/create.html",
+            {"new_item_form": new_item_form},
         )
 
 

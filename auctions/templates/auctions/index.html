@@ -3,10 +3,14 @@
 {% block body %}
   <h2>Active Listings</h2>
 
-  <ol>
+  <ol class="list-group">
     {% for auction in auctions %}
-      <li>
-        <a href="{% url 'auction_item' auction.id %}">{{ auction }}</a>
+      <li class="list-group-item">
+        <div>
+          <a href="{% url 'auction_item' auction.id %}">{{ auction }}</a>
+          <br />
+          <p>Current price: {{ auction.price }}$</p>
+        </div>
       </li>
     {% endfor %}
   </ol>
