@@ -6,7 +6,15 @@
   <h5>Current Bid: {{ current_bid }}$</h5>
   <div class="d-flex flex-row align-items-center">
     <h3 class="p-2">Bid List:</h3>
-    {% if not is_same_user %}
+    {% if is_same_user and not auction.is_closed %}
+      <form class="d-flex flex-row align-items-center p-2" action="{% url 'auction_close' %}" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="auction_id" value="{{ auction.id }}" />
+        <input type="submit" value="Close Auction" class="btn btn-primary m-2" />
+      </form>
+    {% elif auction.is_closed %}
+      <h3 class="text-primary">Auction CLOSED</h3>
+    {% else %}
       <form class="d-flex flex-row align-items-center p-2" action="{% url 'place_bid' %}" method="post">
         {% csrf_token %}
         <input type="hidden" name="auction_price" value=" {{ auction.price }}" />
@@ -23,15 +31,17 @@
   </ol>
 {% endblock %}
 
-{% block navlinks %}
-  <li class="nav-item">
-    <form class="nav-item" id="watchlist_form" action="{% url 'add_to_watchlist' auction.id %}" method="post">
-      {% csrf_token %}
-      {% if is_watchlisted %}
-        <a class="nav-link" style="color: #007bff; cursor: pointer;" onclick="document.getElementById('watchlist_form').submit();">Remove Watchlist</a>
-      {% else %}
-        <a class="nav-link" style="color: #007bff; cursor: pointer;" onclick="document.getElementById('watchlist_form').submit();">Add Watchlist</a>
-      {% endif %}
-    </form>
-  </li>
-{% endblock %}
+{% if user.is_authenticated %}
+  {% block navlinks %}
+    <li class="nav-item">
+      <form class="nav-item" id="watchlist_form" action="{% url 'add_to_watchlist' auction.id %}" method="post">
+        {% csrf_token %}
+        {% if is_watchlisted %}
+          <a class="nav-link" style="color: #007bff; cursor: pointer;" onclick="document.getElementById('watchlist_form').submit();">Remove Watchlist</a>
+        {% else %}
+          <a class="nav-link" style="color: #007bff; cursor: pointer;" onclick="document.getElementById('watchlist_form').submit();">Add Watchlist</a>
+        {% endif %}
+      </form>
+    </li>
+  {% endblock %}
+{% endif %}

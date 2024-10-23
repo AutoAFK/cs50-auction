@@ -26,8 +26,10 @@ def auction_item(request, auction_id):
         item.price = highest_bid
         item.save()
 
-    user = request.user
-    watchlist_item = user.user_watchlist.filter(auction=item).exists()
+    watchlist_item = []
+    if request.user.is_authenticated:
+        user = request.user
+        watchlist_item = user.user_watchlist.filter(auction=item).exists()
     # create a place bid form and set minimum value to the heighest bid.
     form = PlaceBidForm()
     form.fields["amount"].widget.attrs["min"] = item.price
@@ -80,6 +82,17 @@ def auction_create(request):
                 "items_list": items_list,
             },
         )
+
+
+def auction_close(request):
+    if request.method == "POST":
+        auction_id = request.POST["auction_id"]
+        user = request.user
+        auction = Auction.objects.get(id=auction_id)
+        if user == auction.user:
+            auction.is_closed = True
+            auction.save()
+        return HttpResponseRedirect(reverse("auction_item", args=[auction_id]))
 
 
 def item_create(request):
